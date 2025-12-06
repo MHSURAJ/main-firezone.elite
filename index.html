@@ -2,57 +2,43 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Login</title>
+  <title>FireZone Login</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
     body {
       margin: 0;
       padding: 0;
-      font-family: Arial;
       height: 100vh;
-      background: url("bg.jpg") no-repeat center center fixed;
+      background: url("assets/bg.jpg") no-repeat center center fixed;
       background-size: cover;
       display: flex;
       justify-content: center;
       align-items: center;
+      font-family: Arial, sans-serif;
     }
 
     .box {
-      background: rgba(0,0,0,0.6);
-      padding: 35px;
-      width: 300px;
+      background: rgba(0,0,0,0.7);
+      padding: 30px;
+      width: 350px;
       border-radius: 10px;
-      color: white;
       text-align: center;
-    }
-
-    input {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 6px;
-      border: none;
+      color: white;
     }
 
     button {
-      width: 100%;
-      padding: 10px;
-      background: #00c4ff;
+      padding: 12px 20px;
+      background: #ff4d00;
+      color: white;
       border: none;
+      font-size: 18px;
       border-radius: 6px;
       cursor: pointer;
-      font-size: 16px;
-      margin-top: 10px;
-    }
-
-    .error {
-      color: #ff6b6b;
-      margin-top: 10px;
+      margin-top: 15px;
     }
   </style>
 
-  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
@@ -60,48 +46,41 @@
 
 <body>
   <div class="box">
-    <h2>Login</h2>
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="pass" placeholder="Password">
-    <button onclick="login()">Login</button>
-    <div class="error" id="msg"></div>
+    <h2>FireZone Login</h2>
+    <p>Login with Google to continue</p>
+    <button onclick="login()">Sign in with Google</button>
   </div>
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "YOUR-KEY",
-      authDomain: "YOUR.firebaseapp.com",
-      databaseURL: "https://YOUR.firebaseio.com",
-      projectId: "YOUR",
-      storageBucket: "YOUR.appspot.com",
-      messagingSenderId: "xxxxxxx",
-      appId: "xxxxxxx"
-    };
-    firebase.initializeApp(firebaseConfig);
+<script>
+const firebaseConfig = {
+    apiKey: "AIzaSyD66aIVOTVco6rTtpVinkl64UZGnZDgn1o",
+    authDomain: "firezone-elite.firebaseapp.com",
+    projectId: "firezone-elite",
+    databaseURL: "https://firezone-elite-default-rtdb.firebaseio.com/",
+    appId: "1:121224317328:web:a4d19bab51fc8076400b15"
+};
 
-    function login() {
-      let email = document.getElementById("email").value;
-      let pass = document.getElementById("pass").value;
-      let msg = document.getElementById("msg");
+firebase.initializeApp(firebaseConfig);
 
-      firebase.auth().signInWithEmailAndPassword(email, pass)
-      .then(async (user) => {
-        let uid = user.user.uid;
+function login() {
+    let provider = new firebase.auth.GoogleAuthProvider();
 
-        // Check role from database
+    firebase.auth().signInWithPopup(provider).then(async (res) => {
+        let uid = res.user.uid;
+
         const snap = await firebase.database().ref("users/" + uid + "/role").once("value");
         let role = snap.val();
 
         if (role === "admin") {
-          window.location.href = "https://USERNAME.github.io/admin-dashboard/admin.html";
+            window.location.href = "https://mhsuraj.github.io/admin-firezone.elite/";
         } else {
-          window.location.href = "https://USERNAME.github.io/public-dashboard/public.html";
+            window.location.href = "https://mhsuraj.github.io/public-firezone.elite/";
         }
-      })
-      .catch(e => {
-        msg.innerHTML = e.message;
-      });
-    }
-  </script>
+    }).catch(err => {
+        alert(err.message);
+    });
+}
+</script>
+
 </body>
 </html>
