@@ -2,42 +2,18 @@
 <html>
 <head>
   <title>FireZone Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
 </head>
 
-<body class="bg">
+<body>
 
-  <div class="login-box">
+<div class="login-box">
     <h2>FireZone Login</h2>
-    <button id="googleBtn" class="google-btn">Sign in with Google</button>
-  </div>
+    <button id="googleLogin">Sign in with Google</button>
+</div>
 
-  <script type="module">
-    import { auth, provider, getUserRole, createUserIfNotExists } from "./firebase.js";
-    import { signInWithRedirect, getRedirectResult } 
-    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-    document.getElementById("googleBtn").onclick = () => {
-      signInWithRedirect(auth, provider);
-    };
-
-    getRedirectResult(auth).then(async (result) => {
-      if (!result) return;
-
-      const user = result.user;
-
-      // Create user entry if first time
-      createUserIfNotExists(user.uid, user.displayName, user.email);
-
-      const role = await getUserRole(user.uid);
-
-      if (role === "admin") {
-        window.location.href = "admin.html";
-      } else {
-        window.location.href = "public.html";
-      }
-    }).catch(err => console.log(err));
-  </script>
+<script type="module" src="login.js"></script>
 
 </body>
 </html>
