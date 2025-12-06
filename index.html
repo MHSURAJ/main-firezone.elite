@@ -9,18 +9,18 @@
     body {
         margin: 0;
         padding: 0;
-        background: url("bg.png") no-repeat center center fixed;
+        background: url("assets/bg.png") no-repeat center center fixed;
         background-size: cover;
-        font-family: Arial, sans-serif;
-        color: white;
+        font-family: Arial;
     }
     .box {
         width: 320px;
-        margin: 140px auto;
+        background: rgba(0,0,0,0.7);
         padding: 25px;
-        background: rgba(0,0,0,0.65);
         border-radius: 10px;
+        margin: 140px auto;
         text-align: center;
+        color: white;
     }
     input {
         width: 90%;
@@ -28,7 +28,6 @@
         margin: 10px 0;
         border: none;
         border-radius: 5px;
-        font-size: 15px;
     }
     button {
         width: 95%;
@@ -36,10 +35,16 @@
         border: none;
         background: #28a745;
         color: white;
-        font-size: 16px;
+        font-size: 15px;
         border-radius: 5px;
         cursor: pointer;
         margin-top: 10px;
+    }
+    .google-btn {
+        margin-top: 15px;
+        background: white;
+        color: black;
+        font-weight: 600;
     }
 </style>
 
@@ -52,13 +57,16 @@
 
 <div class="box">
     <h2>Login</h2>
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Password">
-    <button onclick="login()">Login</button>
+
+    <input id="email" type="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
+    <button onclick="emailLogin()">Login</button>
+
+    <button class="google-btn" onclick="googleLogin()">Sign in with Google</button>
 </div>
 
 <script>
-// YOUR FIREBASE CONFIG
+// Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyD66aIVOTVco6rTtpVinkl64UZGnZDgn1o",
   authDomain: "firezone-elite.firebaseapp.com",
@@ -70,19 +78,40 @@ const firebaseConfig = {
   measurementId: "G-9YR0LYN37X"
 };
 
+// Firebase Init
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
-function login() {
-    let email = document.getElementById("email").value;
-    let pass = document.getElementById("password").value;
 
-    auth.signInWithEmailAndPassword(email, pass)
+// ---------------------------
+// EMAIL LOGIN
+// ---------------------------
+function emailLogin() {
+  let email = document.getElementById("email").value;
+  let pass = document.getElementById("password").value;
+
+  auth.signInWithEmailAndPassword(email, pass)
     .then(() => {
-        window.location.href = "public.html";   // redirect after login
+      window.location.href = "public.html";
     })
     .catch(err => alert(err.message));
 }
+
+
+
+// ---------------------------
+// GOOGLE LOGIN
+// ---------------------------
+function googleLogin() {
+    var provider = new firebase.auth.GoogleAuthProvider();
+
+    auth.signInWithPopup(provider)
+    .then(result => {
+        window.location.href = "public.html";
+    })
+    .catch(err => alert(err.message));
+}
+
 </script>
 
 </body>
