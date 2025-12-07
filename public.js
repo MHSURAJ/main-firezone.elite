@@ -28,13 +28,14 @@ document.addEventListener("DOMContentLoaded", ()=>{
         allMatchesSection.style.display = "block";
         myMatchesSection.style.display = "none";
         contactInfo.style.display = "none";
+        renderMatches("all");
     });
 
     myMatchesBtn.addEventListener("click", ()=>{
         allMatchesSection.style.display = "none";
         myMatchesSection.style.display = "block";
         contactInfo.style.display = "none";
-        loadMyMatches();
+        renderMatches("my");
     });
 
     contactUsBtn.addEventListener("click", ()=>{
@@ -43,35 +44,45 @@ document.addEventListener("DOMContentLoaded", ()=>{
         contactInfo.style.display = "block";
     });
 
-    // ===== Load All Matches =====
-    const matchesList = document.getElementById("matchesList");
+    // ===== Matches Data =====
     const matches = JSON.parse(localStorage.getItem("matches")) || [];
-    if(matches.length === 0){
-        matchesList.innerHTML = "<li>No upcoming matches</li>";
-    } else {
-        matchesList.innerHTML = "";
-        matches.forEach(m=>{
-            const li = document.createElement("li");
-            li.textContent = `${m.name} - ${m.date} ${m.time} | Players: ${m.players}`;
-            matchesList.appendChild(li);
+
+    function renderMatches(type){
+        let container = (type === "all") ? document.getElementById("matchesList") : document.getElementById("myMatchesList");
+        container.innerHTML = "";
+
+        let filtered = matches;
+        if(type === "my"){
+            filtered = matches.filter(m => m.registeredPlayers?.includes(userEmail));
+        }
+
+        if(filtered.length === 0){
+            container.innerHTML = "<p>No matches found</p>";
+            return;
+        }
+
+        filtered.forEach(m=>{
+            const card = document.createElement("div");
+            card.className = "match-card";
+
+            let cardHTML = `<h3>${m.name}</h3>
+                            <p><strong>Date:</strong> ${m.date} | <strong>Time:</strong> ${m.time}</p>
+                            <p><strong>Players:</strong> ${m.players}</p>`;
+
+            // Show room info only for verified players
+            if(m.verifiedPlayers?.includes(userEmail)){
+                cardHTML += `<p><strong>Room ID:</strong> ${m.roomID || "-"}</p>
+                             <p><strong>Password:</strong> ${m.roomPassword || "-"}</p>`;
+            }
+
+            cardHTML += `<button onclick="window.open('https://forms.gle/ucxE3a8moxr3QrXp6', '_blank')">Register</button>`;
+
+            card.innerHTML = cardHTML;
+            container.appendChild(card);
         });
     }
 
-    // ===== Load My Matches =====
-    function loadMyMatches(){
-        const myMatchesList = document.getElementById("myMatchesList");
-        const myMatches = matches.filter(m=> m.registeredPlayers?.includes(userEmail));
-        myMatchesList.innerHTML = "";
-
-        if(myMatches.length === 0){
-            myMatchesList.innerHTML = "<li>You have not registered any matches</li>";
-        } else {
-            myMatches.forEach(m=>{
-                const li = document.createElement("li");
-                li.textContent = `${m.name} - ${m.date} ${m.time}`;
-                myMatchesList.appendChild(li);
-            });
-        }
-    }
+    // Initial load
+    renderMatches("all");
 
 });
