@@ -12,7 +12,9 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background: #e5e5e5; /* light gray background */
+    background: url('assets/bg.png') no-repeat center center fixed; /* replace with your bg image */
+    background-size: cover;
+    overflow-x: hidden;
 }
 
 .container {
@@ -23,13 +25,17 @@ body {
 /* Sidebar */
 .sidebar {
     width: 220px;
-    background-color: #222;
+    background-color: rgba(34,34,34,0.95);
     color: white;
     display: flex;
     flex-direction: column;
     padding: 20px;
-    flex-shrink: 0; /* fixed width */
+    position: fixed; /* left fixed */
+    top: 0;
+    left: 0;
+    bottom: 0;
     box-shadow: 2px 0 5px rgba(0,0,0,0.3);
+    z-index: 1000;
 }
 .sidebar h2 {
     margin-bottom: 20px;
@@ -45,7 +51,6 @@ body {
     font-size: 16px;
     border-radius: 4px;
     margin-bottom: 5px;
-    transition: background 0.2s;
 }
 .sidebar button:hover {
     background-color: #444;
@@ -54,13 +59,14 @@ body {
 /* Main content */
 .main {
     flex: 1;
+    margin-left: 240px; /* space for sidebar */
     padding: 20px;
     overflow-y: auto;
 }
 
 /* Match card */
 .match-card {
-    background: white;
+    background: rgba(255,255,255,0.95);
     padding: 15px;
     margin-bottom: 15px;
     border-radius: 8px;
