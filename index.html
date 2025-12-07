@@ -1,31 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>FireZone Elite - Auto Login</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta http-equiv="refresh" content="0; url=login.html">
+  <title>Redirecting...</title>
 </head>
 <body>
-
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-<script src="firebase.js"></script>
-
-<script>
-const adminEmail = "surushannu@gmail.com";
-
-firebase.auth().onAuthStateChanged((user) => {
-    if (user) {
-        if (user.email === adminEmail) {
-            window.location.href = "admin.html";
-        } else {
-            window.location.href = "public.html";
-        }
-    } else {
-        window.location.href = "login.html";
-    }
-});
-</script>
-
+  <p>Redirecting to login...</p>
 </body>
 </html>
