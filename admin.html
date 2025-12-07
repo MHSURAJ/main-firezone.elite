@@ -1,39 +1,102 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Dashboard</title>
-<style>
-body { margin:0; font-family:Arial,sans-serif; display:flex; height:100vh; background:#121212; color:#fff; }
-#sidebar { width:220px; background:#1f1f1f; display:flex; flex-direction:column; padding-top:20px; }
-#sidebar button { padding:12px 20px; border:none; background:none; color:#fff; text-align:left; width:100%; cursor:pointer; font-size:16px; border-left:4px solid transparent; margin-bottom:5px; }
-#sidebar button.active { border-left:4px solid #007bff; background:#2a2a2a; }
-#sidebar button:hover { background:#2a2a2a; }
-#content { flex:1; padding:20px; overflow:auto; }
-table { width:100%; border-collapse: collapse; margin-top:10px; }
-th, td { padding:10px; border:1px solid #444; text-align:left; }
-th { background:#1f1f1f; }
-tr:nth-child(even){ background:#1a1a1a; }
-button.action { padding:5px 10px; margin-right:5px; border:none; border-radius:4px; cursor:pointer; font-weight:bold; }
-.status-approved { color:#28a745; font-weight:bold; }
-.status-rejected { color:#dc3545; font-weight:bold; }
-</style>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="admin.css">
+
+  <style>
+    body { font-family: Arial; margin: 0; padding: 0; background: #f5f5f5; }
+
+    .header {
+        padding: 15px;
+        background: #111;
+        color: #fff;
+        text-align: center;
+        font-size: 22px;
+    }
+
+    .container {
+        padding: 20px;
+        max-width: 900px;
+        margin: auto;
+    }
+
+    .match-card {
+        background: white;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 10px;
+        box-shadow: 0 0 5px #0002;
+    }
+
+    .match-card button { margin-right: 10px; }
+
+    /* MODAL */
+    #matchModal {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: #0007;
+        display: none;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #modalContent {
+        width: 400px;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+    }
+
+    #modalContent input {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 12px;
+    }
+
+    #modalContent button { width: 48%; padding: 10px; }
+  </style>
 </head>
+
 <body>
 
-<div id="sidebar">
-  <button id="dashboardBtn" class="active">Dashboard</button>
-  <button id="matchBtn">Match Management</button>
-  <button id="playerBtn">Players Approval</button>
-  <button id="logoutBtn">Logout</button>
+<div class="header">Admin Dashboard</div>
+
+<div class="container">
+
+  <button id="addMatchBtn">+ Add Match</button>
+
+  <h2>Matches</h2>
+  <div id="matchesList"></div>
+
 </div>
 
-<div id="content">
-  <h1>Welcome to Admin Dashboard</h1>
-  <p>Select an option from the sidebar to manage matches or players.</p>
+<!-- MODAL -->
+<div id="matchModal">
+  <div id="modalContent">
+      <h2 id="modalTitle">Add Match</h2>
+
+      <input id="m_name" placeholder="Match Name">
+      <input id="m_id" placeholder="Match ID">
+      <input id="m_fee" placeholder="Entry Fee">
+      <input id="m_prize" placeholder="Prize">
+      <input id="m_date" type="date">
+      <input id="m_time" type="time">
+      <input id="m_players" placeholder="Total Players">
+
+      <input id="m_roomId" placeholder="Room ID (secret)">
+      <input id="m_roomPass" placeholder="Room Password (secret)">
+
+      <div style="display:flex; justify-content:space-between;">
+        <button id="saveMatchBtn">Save</button>
+        <button id="closeModalBtn">Cancel</button>
+      </div>
+  </div>
 </div>
 
 <script src="admin.js"></script>
+
 </body>
 </html>
