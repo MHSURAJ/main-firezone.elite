@@ -1,70 +1,124 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>FireZone Elite - Admin Dashboard</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, #220000, #400000, #6a0000);
-            color: white;
-            font-family: Arial;
-        }
+  <style>
+    body { background:#111; color:white; font-family:Arial; }
 
-        .sidebar {
-            width: 250px;
-            height: 100vh;
-            position: fixed;
-            background: rgba(0,0,0,0.4);
-            padding-top: 40px;
-        }
+    .match-box {
+      background:#1f1f1f;
+      padding:15px;
+      border-radius:10px;
+      margin:20px;
+      border-left:4px solid #00e676;
+    }
 
-        .sidebar a {
-            display: block;
-            padding: 15px 20px;
-            font-size: 18px;
-            color: #ddd;
-            cursor: pointer;
-        }
+    button {
+      padding:8px 12px;
+      border:none;
+      border-radius:6px;
+      cursor:pointer;
+      margin-right:5px;
+      margin-top:8px;
+      color:white;
+    }
+    .approve { background:green; }
+    .reject { background:red; }
+    .room { background:#2196f3; }
+  </style>
 
-        .content {
-            margin-left: 270px;
-            padding: 20px;
-        }
-
-        .box {
-            background: rgba(0,0,0,0.5);
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
-        button {
-            padding: 10px;
-            background: #FF5733;
-            border: none;
-            color: white;
-            border-radius: 6px;
-        }
-
-    </style>
 </head>
-
 <body>
 
-<div class="sidebar">
-    <a onclick="loadMatches()">Upcoming Matches</a>
-    <a onclick="addMatchForm()">Add Match</a>
-    <a onclick="approvalPage()">Player Approvals</a>
-</div>
+<h2 style="margin-left:20px;">Admin Dashboard</h2>
 
-<div class="content" id="adminContent">
-    <h2>Loading...</h2>
-</div>
+<div id="box"></div>
 
-<script type="module" src="admin.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+<script>
+firebase.initializeApp({
+  apiKey: "AIzaSyD66aIVOTVco6rTtpVinkl64UZGnZDgn1o",
+  authDomain: "firezone-elite.firebaseapp.com",
+  databaseURL: "https://firezone-elite-default-rtdb.firebaseio.com",
+  projectId: "firezone-elite"
+});
+
+const auth = firebase.auth();
+const db = firebase.database();
+const box = document.getElementById("box");
+
+auth.onAuthStateChanged(user => {
+  if (!user || user.email !== "surushannu@gmail.com") {
+    window.location.href = "index.html";
+  } else {
+    loadRequests();
+  }
+});
+
+function loadRequests() {
+  box.innerHTML = "<h3 style='margin-left:20px;'>Player Requests</h3>";
+
+  db.ref("matchRequests").on("value", snap => {
+    box.innerHTML = "";
+
+    snap.forEach(match => {
+      let matchId = match.key;
+
+      match.forEach(user => {
+        let data = user.val();
+
+        box.innerHTML += `
+          <div class='match-box'>
+            <h3>Match: ${matchId}</h3>
+            <p><b>Email:</b> ${data.email}</p>
+            <p><b>Status:</b> ${data.status}</p>
+
+            <button class="approve" onclick="approve('${matchId}','${user.key}')">Approve</button>
+            <button class="reject" onclick="reject('${matchId}','${user.key}')">Reject</button>
+
+            <button class="room" onclick="addRoom('${matchId}','${user.key}')">Add Room ID</button>
+          </div>
+        `;
+      });
+    });
+  });
+}
+
+function approve(matchId, uid) {
+  db.ref("matchRequests/"+matchId+"/"+uid).update({
+    status: "approved"
+  });
+
+  alert("Approved!");
+}
+
+function reject(matchId, uid) {
+  db.ref("matchRequests/"+matchId+"/"+uid).update({
+    status: "rejected"
+  });
+
+  alert("Rejected.");
+}
+
+function addRoom(matchId, uid) {
+  let room = prompt("Room ID:");
+  let pass = prompt("Password:");
+
+  if (room && pass) {
+    db.ref("matchRequests/"+matchId+"/"+uid).update({
+      roomId: room,
+      password: pass
+    });
+    alert("Room details added!");
+  }
+}
+</script>
 
 </body>
 </html>
