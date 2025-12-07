@@ -3,97 +3,42 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Dashboard</title>
+<title>Admin Dashboard - Match Management</title>
+<link rel="stylesheet" href="admin.css">
 <style>
-    body { margin:0; font-family: Arial,sans-serif; background:#121212; color:#fff; }
-    h1 { padding:20px 20px 0 20px; margin:0; }
-    table { width:95%; margin:20px auto; border-collapse: collapse; }
-    th, td { padding:12px; border:1px solid #444; text-align:left; }
-    th { background:#1f1f1f; }
-    tr:nth-child(even) { background:#1a1a1a; }
-    button { padding:6px 12px; margin-right:5px; border:none; cursor:pointer; border-radius:4px; font-weight:bold; }
-    .approve { background-color:#28a745; color:#fff; }
-    .reject { background-color:#dc3545; color:#fff; }
-    .status-approved { color:#28a745; font-weight:bold; }
-    .status-rejected { color:#dc3545; font-weight:bold; }
+  body { margin:0; font-family: Arial,sans-serif; background:#121212; color:#fff; }
+  h1 { padding:20px 20px 0 20px; margin:0; }
+  table { width:95%; margin:20px auto; border-collapse: collapse; }
+  th, td { padding:12px; border:1px solid #444; text-align:left; }
+  th { background:#1f1f1f; }
+  tr:nth-child(even) { background:#1a1a1a; }
+  button { padding:6px 12px; margin-right:5px; border:none; cursor:pointer; border-radius:4px; font-weight:bold; }
+  .add { background:#007bff; color:#fff; margin-left:20px; }
+  .edit { background:#ffc107; color:#000; }
+  .delete { background:#dc3545; color:#fff; }
+  input { padding:4px; border-radius:3px; border:none; }
 </style>
 </head>
 <body>
 
-<h1>Admin Dashboard</h1>
-<p style="padding-left:20px;">Player Requests</p>
+<h1>Admin Dashboard - Match Management</h1>
+<button class="add" id="addMatchBtn">Add Match</button>
 
-<table id="playerTable">
+<table id="matchTable">
 <thead>
 <tr>
-<th>Name</th>
-<th>Email</th>
-<th>Phone</th>
-<th>Status</th>
+<th>Match Name</th>
+<th>Date</th>
+<th>Time</th>
+<th>Players</th>
 <th>Action</th>
 </tr>
 </thead>
 <tbody>
-<!-- Player rows injected here -->
+<!-- Match rows injected here -->
 </tbody>
 </table>
 
-<script>
-// ===== CONFIG =====
-// Publish Google Form responses as CSV/TSV, paste URL here
-const sheetURL = "https://docs.google.com/spreadsheets/d/e/YOUR_SHEET_ID/pub?output=tsv"; // replace with your sheet
-// ==================
-
-let approvals = JSON.parse(localStorage.getItem("approvals")) || {};
-
-function renderTable(data) {
-    const tbody = document.querySelector("#playerTable tbody");
-    tbody.innerHTML = "";
-    data.forEach(row => {
-        const [name, email, phone] = row;
-        const tr = document.createElement("tr");
-        let statusText = approvals[email] || "Pending";
-        let statusClass = statusText === "approved" ? "status-approved" :
-                          statusText === "rejected" ? "status-rejected" : "";
-
-        tr.innerHTML = `
-            <td>${name}</td>
-            <td>${email}</td>
-            <td>${phone}</td>
-            <td class="${statusClass}">${statusText}</td>
-            <td>
-                <button class="approve" ${statusText==="approved"?"disabled":""}>Approve</button>
-                <button class="reject" ${statusText==="rejected"?"disabled":""}>Reject</button>
-            </td>
-        `;
-        // Button Events
-        tr.querySelector(".approve").addEventListener("click", ()=>{
-            approvals[email] = "approved";
-            localStorage.setItem("approvals", JSON.stringify(approvals));
-            renderTable(data);
-        });
-        tr.querySelector(".reject").addEventListener("click", ()=>{
-            approvals[email] = "rejected";
-            localStorage.setItem("approvals", JSON.stringify(approvals));
-            renderTable(data);
-        });
-        tbody.appendChild(tr);
-    });
-}
-
-// Fetch Google Sheet Data
-fetch(sheetURL)
-.then(res => res.text())
-.then(tsv => {
-    const rows = tsv.split("\n").slice(1).filter(r => r.trim()!=="").map(r => r.split("\t"));
-    renderTable(rows);
-})
-.catch(err => {
-    console.error("Error fetching sheet:", err);
-    const tbody = document.querySelector("#playerTable tbody");
-    tbody.innerHTML = "<tr><td colspan='5'>Failed to load player requests.</td></tr>";
-});
-</script>
-
+<script src="admin.js"></script>
 </body>
 </html>
