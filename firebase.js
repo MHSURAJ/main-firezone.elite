@@ -1,4 +1,4 @@
-// firebase.js
+// Initialize Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyD66aIVOTVco6rTtpVinkl64UZGnZDgn1o",
   authDomain: "firezone-elite.firebaseapp.com",
