@@ -1,137 +1,127 @@
-// =====================
-//  USER LOGIN CHECK
-// =====================
+document.addEventListener("DOMContentLoaded", () => {
 
-let userEmail = localStorage.getItem("loggedInUser");
-if (!userEmail) {
-    window.location.href = "index.html";
-}
+    // =====================
+    //  LOGIN CHECK
+    // =====================
+    const userEmail = localStorage.getItem("userEmail");
+    const userType = localStorage.getItem("userType");
 
-// =====================
-//  SIDEBAR BUTTONS
-// =====================
+    if (!userEmail || userType !== "player") {
+        window.location.href = "login.html";
+    }
 
-const allBtn = document.getElementById("allMatchesBtn");
-const myBtn = document.getElementById("myMatchesBtn");
-const contactBtn = document.getElementById("contactUsBtn");
+    // =====================
+    //  SIDEBAR BUTTONS
+    // =====================
+    const allBtn = document.getElementById("allMatchesBtn");
+    const myBtn = document.getElementById("myMatchesBtn");
+    const contactBtn = document.getElementById("contactUsBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
 
-const allSec = document.getElementById("allMatchesSection");
-const mySec = document.getElementById("myMatchesSection");
-const contactSec = document.getElementById("contactInfo");
+    const allSec = document.getElementById("allMatchesSection");
+    const mySec = document.getElementById("myMatchesSection");
+    const contactSec = document.getElementById("contactInfo");
 
-allBtn.onclick = () => {
-    allSec.style.display = "block";
-    mySec.style.display = "none";
-    contactSec.style.display = "none";
-};
+    allBtn.addEventListener("click", () => {
+        allSec.style.display = "block";
+        mySec.style.display = "none";
+        contactSec.style.display = "none";
+    });
 
-myBtn.onclick = () => {
-    allSec.style.display = "none";
-    mySec.style.display = "block";
-    contactSec.style.display = "none";
-};
+    myBtn.addEventListener("click", () => {
+        allSec.style.display = "none";
+        mySec.style.display = "block";
+        contactSec.style.display = "none";
+    });
 
-contactBtn.onclick = () => {
-    allSec.style.display = "none";
-    mySec.style.display = "none";
-    contactSec.style.display = "block";
-};
+    contactBtn.addEventListener("click", () => {
+        allSec.style.display = "none";
+        mySec.style.display = "none";
+        contactSec.style.display = "block";
+    });
 
-// LOGOUT
-document.getElementById("logoutBtn").onclick = () => {
-    localStorage.removeItem("loggedInUser");
-    window.location.href = "index.html";
-};
+    logoutBtn.addEventListener("click", () => {
+        localStorage.removeItem("userEmail");
+        localStorage.removeItem("userType");
+        alert("Logged out!");
+        window.location.href = "login.html";
+    });
 
-// =====================
-//  LOAD MATCHES
-// =====================
+    // =====================
+    //  LOAD MATCHES
+    // =====================
+    const matchesList = document.getElementById("matchesList");
+    const myMatchesList = document.getElementById("myMatchesList");
 
-function loadMatches() {
-    let matches = JSON.parse(localStorage.getItem("matches")) || [];
-    let approvals = JSON.parse(localStorage.getItem("approvals")) || {};
+    function renderMatches() {
+        const matches = JSON.parse(localStorage.getItem("matches")) || [];
+        const approvals = JSON.parse(localStorage.getItem("approvals")) || {};
 
-    let allMatchesList = document.getElementById("matchesList");
-    let myMatchesList = document.getElementById("myMatchesList");
+        matchesList.innerHTML = "";
+        myMatchesList.innerHTML = "";
 
-    allMatchesList.innerHTML = "";
-    myMatchesList.innerHTML = "";
-
-    matches.forEach((m, i) => {
-        let btnText = "Register";
-        let btnDisabled = false;
-
-        if (approvals[userEmail] === "pending_" + m.matchId) {
-            btnText = "Pending…";
-            btnDisabled = true;
+        if (matches.length === 0) {
+            matchesList.innerHTML = "<p>No upcoming matches.</p>";
+            return;
         }
 
-        if (approvals[userEmail] === "approved_" + m.matchId) {
-            btnText = "Approved";
-            btnDisabled = true;
-        }
+        matches.forEach((m, i) => {
 
-        // ALL MATCHES CARD
-        let card = document.createElement("div");
-        card.className = "match-card";
-        card.innerHTML = `
-            <h3>${m.name}</h3>
-            <p><b>ID:</b> ${m.matchId}</p>
-            <p><b>Entry Fee:</b> ${m.entryFee}</p>
-            <p><b>Prize:</b> ${m.prize}</p>
-            <p><b>Date:</b> ${m.date}</p>
-            <p><b>Time:</b> ${m.time}</p>
+            // =====================
+            //  ALL MATCHES
+            // =====================
+            let btnText = "Register";
+            let btnDisabled = false;
 
-            <button onclick="registerMatch(${i})" ${btnDisabled ? "disabled" : ""}>
-                ${btnText}
-            </button>
-        `;
+            if (approvals[userEmail] === "pending_" + m.matchId) {
+                btnText = "Pending…";
+                btnDisabled = true;
+            }
+            if (approvals[userEmail] === "approved_" + m.matchId) {
+                btnText = "Approved";
+                btnDisabled = true;
+            }
 
-        allMatchesList.appendChild(card);
-
-        // SHOW IN MY MATCHES WHEN APPROVED
-        if (approvals[userEmail] === "approved_" + m.matchId) {
-            let myCard = document.createElement("div");
-            myCard.className = "match-card";
-            myCard.innerHTML = `
+            const card = document.createElement("div");
+            card.className = "match-card";
+            card.innerHTML = `
                 <h3>${m.name}</h3>
+                <p><b>ID:</b> ${m.matchId}</p>
+                <p><b>Entry Fee:</b> ${m.entryFee}</p>
+                <p><b>Prize:</b> ${m.prize}</p>
                 <p><b>Date:</b> ${m.date}</p>
                 <p><b>Time:</b> ${m.time}</p>
-
-                <h4>Room Details</h4>
-                <p><b>Room ID:</b> ${m.roomId}</p>
-                <p><b>Password:</b> ${m.password}</p>
+                <button ${btnDisabled ? "disabled" : ""} id="regBtn${i}">${btnText}</button>
             `;
-            myMatchesList.appendChild(myCard);
-        }
-    });
-}
+            matchesList.appendChild(card);
 
-// =====================
-//  REGISTER MATCH
-// =====================
+            // Register click
+            card.querySelector(`#regBtn${i}`).addEventListener("click", () => {
+                approvals[userEmail] = "pending_" + m.matchId;
+                localStorage.setItem("approvals", JSON.stringify(approvals));
+                alert("Registration sent! Wait for admin approval.");
+                renderMatches();
+            });
 
-function registerMatch(index) {
-    let matches = JSON.parse(localStorage.getItem("matches")) || [];
-    let approvals = JSON.parse(localStorage.getItem("approvals")) || {};
+            // =====================
+            //  MY MATCHES (APPROVED)
+            // =====================
+            if (approvals[userEmail] === "approved_" + m.matchId) {
+                const myCard = document.createElement("div");
+                myCard.className = "match-card";
+                myCard.innerHTML = `
+                    <h3>${m.name}</h3>
+                    <p><b>Date:</b> ${m.date}</p>
+                    <p><b>Time:</b> ${m.time}</p>
+                    <h4 style="margin-top:10px;">Room Details</h4>
+                    <p><b>Room ID:</b> ${m.roomId}</p>
+                    <p><b>Password:</b> ${m.password}</p>
+                `;
+                myMatchesList.appendChild(myCard);
+            }
 
-    let match = matches[index];
+        });
+    }
 
-    approvals[userEmail] = "pending_" + match.matchId;
-
-    localStorage.setItem("approvals", JSON.stringify(approvals));
-
-    alert("Registration sent! Wait for admin approval.");
-    loadMatches();
-}
-
-// =====================
-//  ON LOAD
-// =====================
-
-window.onload = () => {
-    loadMatches();
-    allSec.style.display = "block";
-    mySec.style.display = "none";
-    contactSec.style.display = "none";
-};
+    renderMatches();
+});
