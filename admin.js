@@ -87,7 +87,7 @@ function loadMatches() {
         <p><b>Prize:</b> ${m.prize}</p>
         <p><b>Date:</b> ${m.date}</p>
         <p><b>Time:</b> ${m.time}</p>
-        
+
         <div class="card-btns">
           <button class="edit-btn" onclick="openPopup(${i})">Edit</button>
           <button class="delete-btn" onclick="deleteMatch(${i})">Delete</button>
@@ -106,16 +106,17 @@ function loadPendingPlayers() {
   let playerList = document.getElementById("playerList");
 
   playerList.innerHTML = "";
-
   let hasPending = false;
 
   for (let email in approvals) {
-    if (approvals[email] === "pending") {
+    if (approvals[email].startsWith("pending_")) {
+      let matchId = approvals[email].replace("pending_", "");
       hasPending = true;
 
       playerList.innerHTML += `
         <div class="match-card">
           <h3>${email}</h3>
+          <p>Match ID: <b>${matchId}</b></p>
           <p>Status: <b>Pending</b></p>
 
           <button style="background:green;color:white;padding:7px;border:none;border-radius:5px;"
@@ -135,7 +136,11 @@ function loadPendingPlayers() {
 
 function approvePlayer(email) {
   let approvals = JSON.parse(localStorage.getItem("approvals")) || {};
-  approvals[email] = "approved";
+
+  let matchId = approvals[email].split("_")[1]; // pending → matchId
+
+  approvals[email] = "approved_" + matchId;
+
   localStorage.setItem("approvals", JSON.stringify(approvals));
 
   alert(email + " approved!");
